@@ -1,0 +1,129 @@
+/* classless css styles */
+/* divs with round corners and shadow */
+
+
+/* divs all have round corners and shadow */
+div {
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    box-shadow: 5px 5px 0 #0f0a0f;
+    -moz-box-shadow: 5px 5px 0 #0f0a;
+    -webkit-box-shadow: 5px 5px 0 #0f0a;
+    /* some light border */
+    border: 0.5px solid #0f0a;
+    /* little margin & padding */
+    margin: 20px;
+    margin-bottom: 30px;
+    padding: 5px;
+    
+
+
+
+}
+
+/* no shadow/border on divs without any content */
+div:empty {
+    box-shadow: none;
+    border: none;
+}
+
+/* body a bit margined */
+body {
+    margin: 10%;
+}
+
+/* dark background and neon monospace font on everything */
+body, div, span, p, a, h1, h2, h3, h4, h5, h6, button, input, select, textarea {
+    /* transparent backgorund */
+    background-color: #00000000;
+    color: #0f0a;
+    font-family: 'VT323', monospace;
+}
+
+/* body black background */
+body {
+    background-color: #000;
+}
+
+button {
+    background-color: #000;
+    color: #0f0;
+    border: 1px solid #0f0;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    box-shadow: 2px 2px 0 #0f0;
+    -moz-box-shadow: 2px 2px 0 #0f0;
+    -webkit-box-shadow: 2px 2px 0 #0f0;
+    margin: 15px;
+    padding: 5px;
+    cursor: pointer;
+    /* same background as h1 */
+    background-image: url(https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif);
+}
+
+/* when mouse over button, change color */
+
+button:hover{
+    background-color: #0f0;
+    background-image: none;
+    color: #000;
+    border: 1px solid #000;
+    /* move  2px right and down */
+    transform: translate(2px, 2px);
+    /* remove shadow */
+    box-shadow: none;
+}
+
+
+
+a {
+    background-color: #000;
+    text-decoration: underline;
+}
+
+
+h1 {
+	background-image: url(https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif);
+    /* make sure each h1 starts gif at random time */
+    animation: gif 5s infinite;
+
+	background-size: cover;
+	color: transparent;
+	-moz-background-clip: text;
+	-webkit-background-clip: text;
+	/* text-transform: uppercase; */
+	font-size: 40px;
+    /* make super bold */
+    font-weight: 900;
+    /* white border on font */
+    /* -webkit-text-stroke: 0.1px #0f0; */
+	margin: 10px 0;
+    text-align: center;
+    margin-bottom: 20px;
+
+        /* wrap, don't overflow */
+
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        
+}
+
+/* class to disable all styles set so far */
+
+.no_style {
+    background-color: transparent;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    cursor: default;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 400;
+    -webkit-text-stroke: none;
+    animation: none;
+}

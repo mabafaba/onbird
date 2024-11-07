@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONBIRD</title>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/mvp.css">  -->
+    <link rel="stylesheet" href="/custom_classless.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
+    <script src = "/networkanimation.js"></script>
+
+    <style>
+    </style>
+</head>
+<body>
+    <div id="p5sketch" class="no_style"></div>
+    <div style="padding:10%;" id="chapter-1" class="chapter">
+        <h1>join us</h1>
+        <!-- movement = group chats -->
+        <p id="section-1">Social movmenents are organised in parts through an organic network of group chats.</p>
+        <!-- how well connected matters for the success of the movement -->
+        <p id="section-3">What 'shape' these networks have, matters for how well a movement can move. </p>
+        <!-- we help you join to make the movement stronger -->
+        <p id="section-4">We study these networks and help you strategically join chat groups in ways that make the whole movement stronger.</p>
+        <!-- <button> element that links  to /find.html -->
+    <form action="/defineSearch.html">
+        <button>Ok let's go!</button>
+    </form>
+        
+    </div>
+   
+</body>
+</html>
+
+<style>
+
+    .chapter {
+        display: none;
+    }
+
+    /* place p5 sketch div as click-through above everything */
+    #p5sketch {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+
+        /* no margins/padding/border */
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+    }
+
+</style>
+<script>
+
+    // set first chapter to display
+    goToChapter('chapter-1');
+    function goToChapter(chapter) {
+        var chapters = document.querySelectorAll('.chapter');
+        chapters.forEach((c) => {
+            c.style.display = 'none';
+        });
+        var selectedChapter = document.querySelector(`#${chapter}`);
+        selectedChapter.style.display = 'block';
+    }
+
+    // start sketch
+    new p5(sketch, 'p5sketch');
+</script>

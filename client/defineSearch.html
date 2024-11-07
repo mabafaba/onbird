@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONBIRD</title>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/mvp.css">  -->
+    <link rel="stylesheet" href="/custom_classless.css">
+
+
+    <style>
+    </style>
+</head>
+<body>
+
+    <!-- chapter: first join the global info channel with explanation why this is improtant -->
+
+    <div style="padding:10%;" id="chapter-01" class="chapter">
+        <h1><i>GLOBAL CHANNEL</i></h1>
+        <p>Join the global information channel</p>
+        <p>Joining the global information channel is important because it helps you stay informed about the movement and its activities. It also helps you connect with other members of the movement.</p>
+        <button onclick="window.location.href='https://chat.whatsapp.com/invite/1234'">Join global information channel</button>
+        <button onclick="goToChapter('chapter-02')">Next</button>
+    
+    </div>
+    <div style="padding:10%;" id="chapter-02" class="chapter">
+        <h1><i>CLOSEST CHAPTER</i></h1>
+        <p>Join the closest local group</p>
+        <p>The real power of movement comes from real world interactions. Joining the closest local group will help you connect with other members in your area and work together to achieve common goals.</p>
+        <input type="text" id="location" name="location" placeholder="Enter a location">
+        <button onclick="findLocation()" style="display:inline-block;">find</button>
+        <div id="placeSearchResults"></div>
+        <div id="selectedLocation"></div>
+        
+        <button onclick="goToChapter('chapter-01')">Back</button>
+        <button onclick="goToChapter('chapter-03')">Next</button>
+
+    </div>
+
+    <div style="padding:10%;" id="chapter-03" class="chapter">
+        <h1><i>SPECIALIZED GROUPS</i></h1>
+        <p>What are you interested in?</p>
+        <p>It's important to join groups that are relevant to your interests. This will help you connect with other members who share your interests and work together to achieve common goals.</p>
+        <!-- checkboxes with themes that one would commonly find among social movement communication channels -->
+        <input type="checkbox" id="theme1" name="theme1" value="outreach">
+        <label for="theme1">Outreach</label><br>
+        <input type="checkbox" id="theme2" name="theme2" value="education">
+        <label for="theme2">Education</label><br>
+        <input type="checkbox" id="theme3" name="theme3" value="health">
+        <label for="theme3">Health</label><br>
+        <input type="checkbox" id="theme4" name="theme4" value="housing">
+        <label for="theme4">Housing</label><br>
+        <input type="checkbox" id="theme5" name="theme5" value="food">
+        <label for="theme5">Food</label><br>
+        <input type="checkbox" id="theme6" name="theme6" value="jobs">
+        <label for="theme6">Jobs</label><br>
+        <button onclick="goToChapter('chapter-2')">Back</button>
+        <button onclick="goToGroupsPage()">Next</button>
+    </div>
+
+
+
+   
+</body>
+</html>
+
+<style>
+
+    .chapter {
+        display: none;
+    }
+
+</style>
+<script>
+    
+    // find on nomatim
+    var searchresults= null;
+    var selectedLocation = null;
+    function findLocation() {
+        // set button to loading
+        // clear previous search results
+        var searchResultContainer = document.querySelector('#placeSearchResults');
+        searchResultContainer.innerHTML = '';
+
+        // clear previous selected location
+        var selectedLocationContainer = document.querySelector('#selectedLocation');
+        selectedLocationContainer.innerHTML = '';
+
+        searchbutton = document.querySelector('button');
+        searchbutton.innerHTML = 'Loading...';
+
+        var search = document.querySelector('#location').value;
+        fetch(`https://nominatim.openstreetmap.org/search?q=${search}&format=json`)
+        .then(response => response.json())
+        .then(data => {
+
+            // set button to go
+            searchbutton.innerHTML = 'Go!';
+            searchresults = data;
+            console.log(data);
+            searchResultContainer.innerHTML = '';
+            // let user know if no results
+            if (data.length == 0) {
+                var button = document.createElement('p');
+                button.innerHTML = 'No matching location found';
+                container.appendChild(button);
+                return;
+            }
+            data.forEach((place) => {
+                var button = document.createElement('button');
+                button.innerHTML = place.display_name;
+                button.onclick = () => {
+                    console.log(place);
+                    selectedLocation = place;
+                    var selectedLocationContainer = document.querySelector('#selectedLocation');
+                    // show selected location in results div
+                    selectedLocationContainer.innerHTML = '';
+
+                    var button = document.createElement('p');
+                    button.innerHTML = place.display_name;
+                    selectedLocationContainer.appendChild(button);
+                    // empty search results
+                    searchResultContainer.innerHTML = '';
+
+                }
+                searchResultContainer.appendChild(button);
+                
+            });
+            
+
+
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            searchbutton.innerHTML = 'Go!';
+        });
+
+    }
+
+    // set first chapter to display
+    goToChapter('chapter-01');
+    function goToChapter(chapter) {
+        var chapters = document.querySelectorAll('.chapter');
+        chapters.forEach((c) => {
+            c.style.display = 'none';
+        });
+        var selectedChapter = document.querySelector(`#${chapter}`);
+        selectedChapter.style.display = 'block';
+    }
+
+    function goToGroupsPage (){
+        // encode selected location and themes in url
+        var location = selectedLocation;
+        var themes = [];
+        inputBoxes = document.querySelectorAll('input[type="checkbox"]');
+        inputBoxes.forEach((box) => {
+            if (box.checked) {
+                themes.push(box.value);
+            }
+        });
+
+       // url encode lat/lon and themes
+       const data = {
+    themes: themes,
+    lat: location.lat,
+    lon: location.lon
+};
+
+const encodedData = encodeURIComponent(JSON.stringify(data));
+const url = `/find.html?data=${encodedData}`;
+
+        
+        window.location.href = url;
+
+    }
+</script>

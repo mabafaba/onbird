@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONBIRD</title>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/mvp.css">  -->
+    <link rel="stylesheet" href="/custom_classless.css">
+
+
+    <style>
+    </style>
+</head>
+<body>
+    <div style="padding:10%;" id="chapter-1" class="chapter">
+
+     hi
+    </div>
+   
+</body>
+</html>
+
+<style>
+
+    .chapter {
+        display: none;
+    }
+
+</style>
+<script>
+
+    // // set first chapter to display
+    goToChapter('chapter-1');
+    function goToChapter(chapter) {
+        var chapters = document.querySelectorAll('.chapter');
+        chapters.forEach((c) => {
+            c.style.display = 'none';
+        });
+        var selectedChapter = document.querySelector(`#${chapter}`);
+        selectedChapter.style.display = 'block';
+    }
+
+    // // get data from url
+    
+
+    const urlParams = new URLSearchParams(window.location.search);
+const encodedDataFromUrl = urlParams.get('data');
+
+if (encodedDataFromUrl) {
+    const decodedData = JSON.parse(decodeURIComponent(encodedDataFromUrl));
+    console.log(decodedData);
+    document.querySelector('#chapter-1').innerHTML = `
+        <h1>WELCOME</h1>
+        <p>Location: ${decodedData.lat}, ${decodedData.lon}</p>
+        <p>Themes: ${decodedData.themes.join(', ')}</p>
+        <button onclick="window.location.href='https://chat.whatsapp.com/invite/1234'">Join nearest local group</button>
+        <button onclick="window.location.href='https://chat.whatsapp.com/invite/5678'">Join city wide group on ${decodedData.themes[0]}</button>
+    `;
+
+    // Use decodedData.themes, decodedData.lat, decodedData.lon as needed
+}
+
+    // display data
+   
+</script>
