@@ -1,7 +1,7 @@
 let sketch = function(p) {
     let nodes = [];
-    let numNodes = 1;
-    let maxNodes = 20;
+    let numNodes = 5
+    let maxNodes = 10;
     let maxDist = 50;
     let maxSpeed = 1;
     let maxRadius = 10;
@@ -14,6 +14,15 @@ let sketch = function(p) {
     }
 
     p.draw = function() {
+
+        // limit nodes to maxNodes (delete oldest)
+        if (nodes.length > maxNodes) {
+            const toRemove = nodes.length - maxNodes;
+            for (let i = 0; i < toRemove; i++) {
+                nodes[0].remove();
+            }
+        }
+    
         p.background(0);
         for (let i = 0; i < nodes.length; i++) {
             nodes[i].update();
@@ -25,15 +34,10 @@ let sketch = function(p) {
             }
         }
 
-        if(p.frameCount % 20 == 0){
-        if (nodes.length < maxNodes) {
-            nodes.push(new Node(p.random(p.width), p.random(p.height)));
-        }
-        }
 
         if(p.frameCount % 100 == 0){
 
-        // if max nodes reached, reset a random node's variables
+       
         if (nodes.length >= maxNodes) {
             let randomNode = p.random(nodes);
             randomNode.initializeRandomState();
@@ -69,7 +73,6 @@ let sketch = function(p) {
             const numberOfNodes = nodes.length;
             const probabilityOfConnection = numberOfConnections.map(connections => connections / sumOfConnections / numberOfNodes);
             const totalProbability = probabilityOfConnection.reduce((a, b) => a + b, 0);
-            console.log('probability of connection', totalProbability*numberOfNodes);
             // normalize probability of connection to sum to 1 if run for all nodes
 
 

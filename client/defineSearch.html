@@ -6,6 +6,8 @@
     <title>ONBIRD</title>
     <!-- <link rel="stylesheet" href="https://unpkg.com/mvp.css">  -->
     <link rel="stylesheet" href="/custom_classless.css">
+    <!-- nominatimSelection.js -->
+    <script src="/nominatimSelection.js"></script>
 
 
     <style>
@@ -27,10 +29,7 @@
         <h1><i>CLOSEST CHAPTER</i></h1>
         <p>Join the closest local group</p>
         <p>The real power of movement comes from real world interactions. Joining the closest local group will help you connect with other members in your area and work together to achieve common goals.</p>
-        <input type="text" id="location" name="location" placeholder="Enter a location">
-        <button onclick="findLocation()" style="display:inline-block;">find</button>
-        <div id="placeSearchResults"></div>
-        <div id="selectedLocation"></div>
+        <nominatim-selection></nominatim-selection>
         
         <button onclick="goToChapter('chapter-01')">Back</button>
         <button onclick="goToChapter('chapter-03')">Next</button>
@@ -41,7 +40,7 @@
         <h1><i>SPECIALIZED GROUPS</i></h1>
         <p>What are you interested in?</p>
         <p>It's important to join groups that are relevant to your interests. This will help you connect with other members who share your interests and work together to achieve common goals.</p>
-        <!-- checkboxes with themes that one would commonly find among social movement communication channels -->
+        <!-- checkboxes with themes that one wowuld commonly find among social movement communication channels -->
         <input type="checkbox" id="theme1" name="theme1" value="outreach">
         <label for="theme1">Outreach</label><br>
         <input type="checkbox" id="theme2" name="theme2" value="education">
@@ -57,10 +56,6 @@
         <button onclick="goToChapter('chapter-2')">Back</button>
         <button onclick="goToGroupsPage()">Next</button>
     </div>
-
-
-
-   
 </body>
 </html>
 
@@ -71,71 +66,9 @@
     }
 
 </style>
-<script>
     
-    // find on nomatim
-    var searchresults= null;
-    var selectedLocation = null;
-    function findLocation() {
-        // set button to loading
-        // clear previous search results
-        var searchResultContainer = document.querySelector('#placeSearchResults');
-        searchResultContainer.innerHTML = '';
+<script>
 
-        // clear previous selected location
-        var selectedLocationContainer = document.querySelector('#selectedLocation');
-        selectedLocationContainer.innerHTML = '';
-
-        searchbutton = document.querySelector('button');
-        searchbutton.innerHTML = 'Loading...';
-
-        var search = document.querySelector('#location').value;
-        fetch(`https://nominatim.openstreetmap.org/search?q=${search}&format=json`)
-        .then(response => response.json())
-        .then(data => {
-
-            // set button to go
-            searchbutton.innerHTML = 'Go!';
-            searchresults = data;
-            console.log(data);
-            searchResultContainer.innerHTML = '';
-            // let user know if no results
-            if (data.length == 0) {
-                var button = document.createElement('p');
-                button.innerHTML = 'No matching location found';
-                container.appendChild(button);
-                return;
-            }
-            data.forEach((place) => {
-                var button = document.createElement('button');
-                button.innerHTML = place.display_name;
-                button.onclick = () => {
-                    console.log(place);
-                    selectedLocation = place;
-                    var selectedLocationContainer = document.querySelector('#selectedLocation');
-                    // show selected location in results div
-                    selectedLocationContainer.innerHTML = '';
-
-                    var button = document.createElement('p');
-                    button.innerHTML = place.display_name;
-                    selectedLocationContainer.appendChild(button);
-                    // empty search results
-                    searchResultContainer.innerHTML = '';
-
-                }
-                searchResultContainer.appendChild(button);
-                
-            });
-            
-
-
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            searchbutton.innerHTML = 'Go!';
-        });
-
-    }
 
     // set first chapter to display
     goToChapter('chapter-01');
@@ -150,7 +83,7 @@
 
     function goToGroupsPage (){
         // encode selected location and themes in url
-        var location = selectedLocation;
+        var location = document.querySelector('nominatim-selection').selectedLocation;
         var themes = [];
         inputBoxes = document.querySelectorAll('input[type="checkbox"]');
         inputBoxes.forEach((box) => {
@@ -161,16 +94,14 @@
 
        // url encode lat/lon and themes
        const data = {
-    themes: themes,
-    lat: location.lat,
-    lon: location.lon
-};
+            themes: themes,
+            lat: location.lat,
+            lon: location.lon
+        };
 
-const encodedData = encodeURIComponent(JSON.stringify(data));
-const url = `/find.html?data=${encodedData}`;
+        const encodedData = encodeURIComponent(JSON.stringify(data));
+        const url = `/find.html?data=${encodedData}`;
 
-        
         window.location.href = url;
-
     }
 </script>

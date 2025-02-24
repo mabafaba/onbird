@@ -3,24 +3,7 @@
 
 
 /* divs all have round corners and shadow */
-div {
-    border-radius: 10px;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    box-shadow: 5px 5px 0 #0f0a0f;
-    -moz-box-shadow: 5px 5px 0 #0f0a;
-    -webkit-box-shadow: 5px 5px 0 #0f0a;
-    /* some light border */
-    border: 0.5px solid #0f0a;
-    /* little margin & padding */
-    margin: 20px;
-    margin-bottom: 30px;
-    padding: 5px;
-    
 
-
-
-}
 
 /* no shadow/border on divs without any content */
 div:empty {
@@ -37,13 +20,19 @@ body {
 body, div, span, p, a, h1, h2, h3, h4, h5, h6, button, input, select, textarea {
     /* transparent backgorund */
     background-color: #00000000;
-    color: #0f0a;
+    color: #FFF;
     font-family: 'VT323', monospace;
+}
+
+input[type="text"] {
+    font-size: 1.2em;
+    width: 80%;
 }
 
 /* body black background */
 body {
     background-color: #000;
+    position: relative;
 }
 
 button {
@@ -60,7 +49,7 @@ button {
     padding: 5px;
     cursor: pointer;
     /* same background as h1 */
-    background-image: url(https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif);
+    /* background-image: url(https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif); */
 }
 
 /* when mouse over button, change color */
@@ -100,8 +89,9 @@ h1 {
     /* white border on font */
     /* -webkit-text-stroke: 0.1px #0f0; */
 	margin: 10px 0;
+
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 
         /* wrap, don't overflow */
 

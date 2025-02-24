@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONBIRD</title>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/mvp.css">  -->
+    <link rel="stylesheet" href="/custom_classless.css">
+
+
+    <style>
+    </style>
+</head>
+<body>
+    <div id="chapter-1" class="chapter">
+        <h1>ADD GROUP</h1>
+
+        <input type="text" id="location" name="location" placeholder="Enter a location">
+        <button onclick="findLocation()" style="display:inline-block;">find</button>
+        <div id="placeSearchResults"></div>
+        <div id="selectedLocation"></div>
+
+    </div>
+   <!-- from for: -->
+   <!-- name: String,
+   url: String,
+   description: String,
+   public: Boolean,
+   themes: [String], -->
+    <div id="chapter-2" class="chapter">
+        <h1>ADD DETAILS</h1>
+
+        <div id="form">
+            <input type="text" name="name" placeholder="Name">
+            <input type="text" name="url" placeholder="URL">
+            <input type="text" name="description" placeholder="Description">
+            <input type="checkbox" name="public" id="public" value="true">
+            <label for="public">Public</label>
+            <!-- hidden input wiht geometry geojson -->
+            <input type="hidden" name="geometry" value="">
+            <input type="text" name="themes" placeholder="Themes">
+            <button type="submit">Add</button>
+        <button onclick="goToChapter('chapter-1')">back</button>
+        </div>
+        
+</body>
+</html>
+
+<style>
+
+    .chapter {
+        display: none;
+    }
+
+</style>
+<script>
+
+var searchresults= null;
+    var selectedLocation = null;
+    function findLocation() {
+        // set button to loading
+        // clear previous search results
+        var searchResultContainer = document.querySelector('#placeSearchResults');
+        searchResultContainer.innerHTML = '';
+
+        // clear previous selected location
+        var selectedLocationContainer = document.querySelector('#selectedLocation');
+        selectedLocationContainer.innerHTML = '';
+
+        searchbutton = document.querySelector('button');
+        searchbutton.innerHTML = 'Loading...';
+
+        var search = document.querySelector('#location').value;
+        fetch(`https://nominatim.openstreetmap.org/search?q=${search}&polygon_geojson=1&format=json`)
+        .then(response => response.json())
+        .then(data => {
+        
+            // set button to go
+            searchbutton.innerHTML = 'Go!';
+            searchresults = data;
+            console.log(data);
+            searchResultContainer.innerHTML = '';
+            // let user know if no results
+            if (data.length == 0) {
+                var button = document.createElement('p');
+                button.innerHTML = 'No matching location found';
+                container.appendChild(button);
+                return;
+            }
+            data.forEach((place) => {
+                var button = document.createElement('button');
+                button.innerHTML = place.display_name;
+                button.onclick = () => {
+                    console.log(place);
+                    selectedLocation = place;
+                    // put selected location geometry in form
+                    var form = document.querySelector('form');
+                    var geometryInput = form.querySelector('input[name="geometry"]');
+                    geometryInput.value = JSON.stringify(place.geojson);
+
+                    var selectedLocationContainer = document.querySelector('#selectedLocation');
+                    // show selected location in results div
+                    selectedLocationContainer.innerHTML = '';
+
+                    var button = document.createElement('p');
+                    button.innerHTML = place.display_name;
+                    selectedLocationContainer.appendChild(button);
+                    // empty search results
+                    searchResultContainer.innerHTML = '';
+                    goToChapter('chapter-2');
+
+                }
+                searchResultContainer.appendChild(button);
+                
+            });
+            
+
+
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            searchbutton.innerHTML = 'Go!';
+        });
+
+    }
+
+    function goToChapter(chapter) {
+        var chapters = document.querySelectorAll('.chapter');
+        chapters.forEach((c) => {
+            c.style.display = 'none';
+        });
+        var selectedChapter = document.querySelector(`#${chapter}`);
+        selectedChapter.style.display = 'block';
+    }
+    goToChapter('chapter-1');
+   
+</script>

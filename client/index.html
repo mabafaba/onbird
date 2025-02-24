@@ -8,35 +8,136 @@
     <link rel="stylesheet" href="/custom_classless.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.js"></script>
     <script src = "/networkanimation.js"></script>
+    <script src="nominatimSelection.js"></script>
+    <script src="encryption/encryptionWithTemporaryKey.js">    </script>
+    <!-- leaflet from cdn -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
     <style>
+        .hidden {
+            display: none;
+        }
+        .back-button {
+           /* bottom left of parent */
+              position: fixed;
+                bottom: 10%;
+                left: 10px;
+        }
+        .next-button {
+            /* bottom right of parent */
+            position: fixed;
+            bottom: 10%;
+            right: 10px;
+        }
+
+        canvas {
+            position:fixed;
+            top:0;
+            left:0;
+        }
     </style>
 </head>
 <body>
     <div id="p5sketch" class="no_style"></div>
-    <div style="padding:10%;" id="chapter-1" class="chapter">
+    <div  id="chapter-1" class="chapter">
         <h1>join us</h1>
         <!-- movement = group chats -->
-        <p id="section-1">Social movmenents are organised in parts through an organic network of group chats.</p>
+        <p id="section-1">Social movements are organised in parts through an organic network of group chats.</p>
         <!-- how well connected matters for the success of the movement -->
         <p id="section-3">What 'shape' these networks have, matters for how well a movement can move. </p>
         <!-- we help you join to make the movement stronger -->
         <p id="section-4">We study these networks and help you strategically join chat groups in ways that make the whole movement stronger.</p>
         <!-- <button> element that links  to /find.html -->
-    <form action="/defineSearch.html">
-        <button>Ok let's go!</button>
-    </form>
+
+        <button onclick="goToChapter('chapter-2')" class="next-button">Next</button>
         
     </div>
-   
-</body>
-</html>
+    <div id="chapter-2" class="chapter">
+        <h1>select location</h1>
+        <p>
+            <nominatim-selection></nominatim-selection>
+        </p>
+        <button onclick="goToChapter('chapter-1')" class="back-button">Back</button>
+        <button onclick="goToChapter('chapter-3')" class="next-button hidden" id="locationNextButton">Next</button>
+    </div>
 
+    <!-- chapter for selecting chat groups -->
+    <div id="chapter-3" class="chapter">
+        <h1>select groups</h1>
+        <p id="groupSelection"></p>
+        <br><br>
+        <p><emph style="color:white;">phone:</emph> <input type="tel" id="phone" name="phone" pattern="\+49\s\d{3}\s\d{6}" placeholder="+49 176 123456" required></p>
+        
+        <button onclick="goToChapter('chapter-2')" class="back-button">Back</button>
+        <button onclick="joinMovement()" class="next-button">JOIN GROUPS ON SIGNAL</button>
+    </div>
+    <div id="chapter-4" class="chapter">
+        <h1>SUCCESS</h1>
+        <p>You have been added to the groups. Welcome to the movement!</p>
+        <!-- invite friends -->
+         <div id="shareButton">
+        <a href="#" onclick="shareText()">invite a friend</a>
+</div>
+        <script>
+        function shareText() {
+          if (navigator.share) {
+            navigator.share({
+              title: 'Join the movement!',
+              text: 'Join the movement with me at https://onbird.de',
+              url: 'https://onbird.de'
+            });
+          } else {
+            navigator.clipboard.writeText('Join the movement with me at https://onbird.de').then(function() {
+                const message = document.createElement('p');
+                message.textContent = 'Link copied to clipboard. Share it with your friends!';
+                message.id='copiedMessage';
+                // remove message if already exists
+                const existingMessage = document.querySelector('#copiedMessage');
+                if (existingMessage) {
+                    existingMessage.remove();
+                }
+                // remove message after 5 seconds
+                setTimeout(() => {
+                    const message = document.querySelector('#copiedMessage');
+                    message.remove();
+                }, 5000);
+                document.body.appendChild(message);
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+            });
+          }
+        }
+        </script>
+        <!-- <groups-map></groups-map> -->
+
+        <button onclick="goToChapter('chapter-3')" class="back-button">Back</button>
+    </div>
+    <div id = "progressBar"></div>
+    
+</body> 
 <style>
-
     .chapter {
+        border-radius: 10px;
+        -moz-border-radius: 10px;
+        -webkit-border-radius: 10px;
+        /* box-shadow: 5px 5px 0 #0f0a0f; */
+        /* -moz-box-shadow: 5px 5px 0 #0f0a; */
+        /* -webkit-box-shadow: 5px 5px 0 #0f0a; */
+        /* some light border */
+        /* border: 0.5px solid #0f0a; */
+        /* little margin & padding */
+        margin: 0px;
+        margin-bottom: 30px;
+        padding: 0px;
         display: none;
+        background-color: #000000DD;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        
     }
+
 
     /* place p5 sketch div as click-through above everything */
     #p5sketch {
@@ -54,18 +155,337 @@
         border-radius: 0;
     }
 
+    groups-map {
+        display: inline-block;
+        width: 100%;
+        height: 400px;
+    }
+
+    #loadingAnimation {
+        content: '';
+        display: block;
+        width: 50px;
+        height: 50px;
+        border: 5px solid #FF00FF;
+        border-top-color: #00FF0000;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        position: fixed;
+        top: 33%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #loadingTextContainer {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+
+    }
+    p {
+        text-align: center;
+    }
+
+    @keyframes spin {
+        from {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+    
+
 </style>
 <script>
+
+  function startLoading() {
+    const loading = document.createElement('div');
+    loading.innerHTML = '<div id="loadingAnimation"></div><div id="loadingTextContainer"><p id="loadingText">Adding you to groups... </p><p>this takes a moment</p></div>';
+    // set id
+    loading.id = 'loading';
+    loading.innerHTML = '<div id="loadingAnimation"></div><div id="loadingText"><p>Adding you to groups... </p><p>this takes a moment</p></div>';
+    loading.style.position = 'fixed';
+    loading.style.top = '0';
+    loading.style.left = '0';
+    loading.style.width = '100%';
+    loading.style.height = '100%';
+    loading.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+    loading.style.display = 'flex';
+    loading.style.justifyContent = 'center';
+    loading.style.alignItems = 'center';
+    // z-index above everything
+    loading.style.zIndex = '1000';
+
+    document.body.appendChild(loading);
+    // hide chapters
+    const chapters = document.querySelectorAll('.chapter');
+    chapters.forEach((chapter) => {
+        chapter.style.display = 'none';
+    });
+    // disable all click events
+    document.body.style.pointerEvents = 'none';
+
+  }
+
+    function stopLoading() {
+        document.body.style.pointerEvents = 'auto';
+        const loading = document.querySelector('#loading');
+        loading.remove();
+        // got to chapter 5
+        goToChapter('chapter-4');
+
+    }
+
+function initProgressBar(){
+    const progressBar = document.querySelector('#progressBar');
+    progressBar.style.width = '100%';
+    progressBar.style.height = '10px';
+    progressBar.style.backgroundColor = '#00FF00';
+    progressBar.style.position = 'fixed';
+    progressBar.style.bottom = '0';
+    progressBar.style.left = '0';
+    progressBar.style.zIndex = '1000';
+    progressBar.style.transition = 'width 0.5s';
+}
+initProgressBar();
+
+function updateProgressBar(progress){
+    const progressBar = document.querySelector('#progressBar');
+    progressBar.style.width = `${progress}%`;
+}
+
+function updateProgressChapter(){
+    const chapters = document.querySelectorAll('.chapter');
+    const total = chapters.length-1;
+    // which chapter is visible
+    // array of booleans if chapter is visible
+    const chapterVisibility = Array.from(chapters).map((chapter) => {
+        return chapter.style.display != 'none';
+    });
+    const current = chapterVisibility.indexOf(true);
+
+
+    const progress = (current / total) * 100;
+    updateProgressBar(progress);
+}
+
+  async function joinMovement(){
+    // validate phone number
+    const phone = document.querySelector('#phone').value;
+    // strip all whitespace and () from phone number
+    const phoneCleaned = phone.replace(/\s/g, '').replace(/\(/g, '').replace(/\)/g, '');
+   
+    const startsWithPlus = phoneCleaned.startsWith('+');
+    const onlyNumbersBracketsBlanks = /^\+?[0-9\s\(\)]+$/;
+
+    onlyNumbersBracketsBlanksTrue = onlyNumbersBracketsBlanks.test(phoneCleaned);
+
+    if (!startsWithPlus || !onlyNumbersBracketsBlanksTrue) {
+        alert('Please enter a valid phone number in the format +49 176 123456');
+        return;
+    }
+
+    var checkedInputBoxes = document.querySelectorAll('input[type="checkbox"]:checked');
+    if (checkedInputBoxes.length === 0) {
+        alert('Please select at least one group to join.');
+        return;
+    }
+
+    selectedChats =[];
+    checkedInputBoxes.forEach((box) => {
+        if (box.checked) {
+            selectedChats.push(box.value);
+        }
+    });
+    const phonenumber = document.querySelector('#phone').value;
+
+    startLoading();
+    fetch('/groups/join', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            phonenumber: phonenumber,
+            _ids: selectedChats
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        stopLoading();
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        stopLoading();
+        alert('Error:', error);
+        goToChapter('chapter-1');
+        console.error('Error:', error);
+    });    
+
+    // load map data
+    // const groupsMap = document.querySelector('groups-map');
+    // groupsMap.loadMapData();
+    // window.dispatchEvent(new Event('resize'));
+    
+
+  }
+
+
+class GroupsMap extends HTMLElement {
+    connectedCallback() {
+        this.map = null;
+        this.attachShadow({ mode: 'open' });
+        this.renderStyles();
+        this.renderMap();
+    }
+
+    renderStyles() {
+        const style = document.createElement('style');
+        style.textContent = `
+            @import url('https://unpkg.com/leaflet/dist/leaflet.css');
+        `;
+        this.shadowRoot.appendChild(style);
+    }
+
+    loadMapData() {
+        // clear all layers from map
+        this.map.eachLayer((layer) => {
+            if (layer instanceof L.Marker) {
+                this.map.removeLayer(layer);
+            }
+        });
+        
+        fetch('/groups')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(group => {
+                    const marker = L.marker([group.geometry.coordinates[1], group.geometry.coordinates[0]]).addTo(this.map);
+                    marker.bindPopup(`<b>${group.properties.name}</b><br>Members: ${group.properties.memberCount}`);
+                });
+
+                // trigger resize event to fix map size
+            })
+            .catch(error => {
+                console.error('Error fetching groups:', error);
+            });
+
+       
+    }
+
+    renderMap() {
+        const mapContainer = document.createElement('div');
+        mapContainer.style.width = '100%';
+        mapContainer.style.height = '100%';
+        this.shadowRoot.appendChild(mapContainer);
+
+        this.map = L.map(mapContainer).setView([52.52, 13.405], 3);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(this.map);
+
+        loadMapData();
+       
+        window.addEventListener('resize', () => {
+            this.map.invalidateSize();
+        });
+        window.dispatchEvent(new Event('resize'));
+    }
+}
+
+customElements.define('groups-map', GroupsMap);
+
+// after page loaded trigger resize event to fix map size
+window.addEventListener('load', () => {
+    window.dispatchEvent(new Event('resize'));
+});
+
+    // nominatim selection
+    const nominatimSelection = document.querySelector('nominatim-selection');
+
+    recommendedGroups = [];
+
+    nominatimSelection.onSelection = function(location) {
+        fetchChatGroups(location).then((recommendation) => {
+
+            const groupSelection = document.querySelector('#groupSelection');
+            groupSelection.innerHTML = '';
+
+
+        recommendation.forEach((rec) => {
+            recommendedGroups.push(rec);
+            const recDiv = document.createElement('p');
+            recDiv.innerHTML = `
+                <input type="checkbox" id="${rec.reason}" name="${rec.reason}" value="${rec._id}" checked>
+                <label for="${rec.reason}"><b>${rec.reason} group:</b> ${rec.name} (${rec.memberCount})</label><br>
+            `;
+            groupSelection.appendChild(recDiv);
+        });
+
+
+
+        goToChapter('chapter-3');
+        // show button to chapter-1
+        // find chapter then find button
+        const locationNextButton = document.querySelector('#locationNextButton');
+        // show button
+        locationNextButton.classList.remove('hidden');
+        });
+        
+    }
+
+
+    nominatimSelection.onSearch = (search, results)=>{
+        // hide chapter 1 next button (instead, users should select a location)
+        const locationNextButton = document.querySelector('#locationNextButton');
+        locationNextButton.classList.add('hidden');
+    }
+
+    fetchChatGroups = async function(place) {
+    
+    const placeAsGeoJson = {
+        type: "Feature",
+        geometry: {
+            type: "Point",
+            coordinates: [place.lon, place.lat]
+        },
+        properties: {
+            name: place.display_name,
+            zipcode: place.address.postcode
+        }
+    };
+
+    console.log(placeAsGeoJson);
+     
+    const response = await fetch(`/groups/recommended`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            geojson: placeAsGeoJson
+        })
+    });
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+    }
 
     // set first chapter to display
     goToChapter('chapter-1');
     function goToChapter(chapter) {
+
         var chapters = document.querySelectorAll('.chapter');
         chapters.forEach((c) => {
             c.style.display = 'none';
         });
         var selectedChapter = document.querySelector(`#${chapter}`);
         selectedChapter.style.display = 'block';
+        updateProgressChapter();
     }
 
     // start sketch

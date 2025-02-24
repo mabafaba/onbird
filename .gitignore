@@ -128,3 +128,16 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# ignore data folder and its contents
+data/
+data/*
+
+
+# ignore environmental variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
