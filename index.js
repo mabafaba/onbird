@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const localGroupChatRouter = require('./server/localGroupChat.router.js');
 const lauRouter = require('./server/lau.router.js');
-const encryptionRouter = require('./server/encryption.js');
+// const encryptionRouter = require('./server/encryption.js');
 // app.use(bodyParser.json());
 app.use(express.urlencoded({extended: false}));
 app.use(bodyParser.json({limit: '101mb'}));
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 app.use('/groups', localGroupChatRouter);
 app.use('/lau', lauRouter);
-app.use('/encryption', encryptionRouter);
+// app.use('/encryption', encryptionRouter);
 
 // serve client folder on root
 app.use(express.static('client'));

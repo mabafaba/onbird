@@ -15,14 +15,45 @@ div:empty {
 body {
     margin: 10%;
 }
+@font-face {
+    font-family: 'Inter';
+    src: url('/fonts/Inter-Regular.woff2') format('woff2');
+    font-weight: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('/fonts/Inter-Bold.woff2') format('woff2');
+    font-weight: bold;
+}
+
+@font-face {
+    font-family: 'WorkSans';
+    src: url('/fonts/WorkSans-Black.woff2') format('woff2');
+    font-weight: 900;
+}
+
+@font-face {
+    font-family: 'WorkSans';
+    src: url('/fonts/WorkSans-Light.woff2') format('woff2');
+    font-weight: 300;
+}
 
 /* dark background and neon monospace font on everything */
 body, div, span, p, a, h1, h2, h3, h4, h5, h6, button, input, select, textarea {
-    /* transparent backgorund */
-    background-color: #00000000;
-    color: #FFF;
-    font-family: 'VT323', monospace;
+
+    background-color: #FFF;
+    color: #000;
+
+    font-family: 'Inter';
 }
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'WorkSans';
+    font-weight: 900;
+}
+
+
 
 input[type="text"] {
     font-size: 1.2em;
@@ -31,20 +62,22 @@ input[type="text"] {
 
 /* body black background */
 body {
-    background-color: #000;
+    background-color: #FFF;
     position: relative;
 }
 
 button {
-    background-color: #000;
-    color: #0f0;
-    border: 1px solid #0f0;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
+    background-color: #F00;
+    color: #FFF;
+    border: 0px solid #0f0;
+    border-radius: 20px;
+    min-width:100px;
+    height:40px;
+    /* -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     box-shadow: 2px 2px 0 #0f0;
     -moz-box-shadow: 2px 2px 0 #0f0;
-    -webkit-box-shadow: 2px 2px 0 #0f0;
+    -webkit-box-shadow: 2px 2px 0 #0f0; */
     margin: 15px;
     padding: 5px;
     cursor: pointer;
@@ -55,11 +88,7 @@ button {
 /* when mouse over button, change color */
 
 button:hover{
-    background-color: #0f0;
-    background-image: none;
-    color: #000;
-    border: 1px solid #000;
-    /* move  2px right and down */
+     /* move  2px right and down */
     transform: translate(2px, 2px);
     /* remove shadow */
     box-shadow: none;
@@ -68,20 +97,19 @@ button:hover{
 
 
 a {
-    background-color: #000;
     text-decoration: underline;
 }
 
 
 h1 {
-	background-image: url(https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif);
+	/* background-image: url(https://media.giphy.com/media/26BROrSHlmyzzHf3i/giphy.gif); */
     /* make sure each h1 starts gif at random time */
-    animation: gif 5s infinite;
+    /* animation: gif 5s infinite; */
 
-	background-size: cover;
+	/* background-size: cover; */
 	color: transparent;
-	-moz-background-clip: text;
-	-webkit-background-clip: text;
+	/* -moz-background-clip: text; */
+	/* -webkit-background-clip: text; */
 	/* text-transform: uppercase; */
 	font-size: 40px;
     /* make super bold */
@@ -90,6 +118,7 @@ h1 {
     /* -webkit-text-stroke: 0.1px #0f0; */
 	margin: 10px 0;
 
+    color: #F00;
     text-align: center;
     margin-bottom: 30px;
 

@@ -33,3 +33,7 @@ const Lau = mongoose.model('Lau', lauSchema);
 Lau.collection.createIndex({ geometry: '2dsphere' });
 
 module.exports = Lau;
+
+// find 67bb31897c31df97dbd54392 mongodb atlas
+// {"
+// 

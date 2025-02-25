@@ -1,7 +1,7 @@
 let sketch = function(p) {
     let nodes = [];
-    let numNodes = 5
-    let maxNodes = 10;
+    let numNodes = 10
+    let maxNodes = 40;
     let maxDist = 50;
     let maxSpeed = 1;
     let maxRadius = 10;
@@ -23,7 +23,7 @@ let sketch = function(p) {
             }
         }
     
-        p.background(0);
+        p.background(255);
         for (let i = 0; i < nodes.length; i++) {
             nodes[i].update();
             nodes[i].display();
@@ -55,8 +55,9 @@ let sketch = function(p) {
             this.vel = p5.Vector.random2D();
             this.vel.mult(p.random(maxSpeed));
             this.acc = p.createVector(0, 0);
-            this.radius = p.random(2, maxRadius);
+            this.radius = p.random(5, maxRadius);
             this.connections = [];
+            this.orientation = p.createVector(1, 0);
             // for (let i = 0; i < nodes.length; i++) {
             //     if (nodes[i] != this) {
             //         let d = p.dist(this.pos.x, this.pos.y, nodes[i].pos.x, nodes[i].pos.y);
@@ -165,6 +166,17 @@ let sketch = function(p) {
                     this.connections.splice(i, 1);
                 }
             }
+
+            // move orientation towards velocity
+            let target = this.vel.heading();
+            let diff = target - this.orientation.heading();
+            if (diff > p.PI) {
+                diff -= p.TWO_PI;
+            }
+            if (diff < -p.PI) {
+                diff += p.TWO_PI;
+            }
+            this.orientation.rotate(diff * 0.1);
         }
 
         display() {
@@ -172,7 +184,35 @@ let sketch = function(p) {
             p.fill(255, 0, 255, 100);
             p.stroke(255, 0, 100);
             p.strokeWeight(0.4);
-            p.ellipse(this.pos.x, this.pos.y, this.radius * 2);
+            // p.ellipse(this.pos.x, this.pos.y, this.radius * 2);
+            // triangle!
+            p.push();
+         
+            // rotate 90 degrees
+            p.translate(this.pos.x, this.pos.y);
+            p.rotate(p.PI/2);
+            // rotate in velocity direction
+            p.rotate(this.orientation.heading());
+            let trianglepoints = [
+                // format: [x, y]
+                [-this.radius, this.radius], // red
+                [-this.radius, - 2*this.radius], // green
+                [this.radius, 1.5*this.radius] // blue
+            ];
+
+            // // show triangle points in 3 colors
+            // p.fill(255, 0, 0); // red
+            // p.ellipse(trianglepoints[0][0], trianglepoints[0][1], 5);
+            // p.fill(0, 255, 0); // green
+            // p.ellipse(trianglepoints[1][0], trianglepoints[1][1], 5);
+            // p.fill(0, 0, 255); // blue
+            // p.ellipse(trianglepoints[2][0], trianglepoints[2][1], 5);
+
+            p.noStroke();
+            p.fill(255,0,0)
+
+            p.triangle(trianglepoints[0][0], trianglepoints[0][1], trianglepoints[1][0], trianglepoints[1][1], trianglepoints[2][0], trianglepoints[2][1]);
+            p.pop();
             for (let i = 0; i < this.connections.length; i++) {
                 p.line(this.pos.x, this.pos.y, this.connections[i].pos.x, this.connections[i].pos.y);
             }
@@ -230,6 +270,7 @@ let sketch = function(p) {
                 }
             }
         }
+        
     }
 
     p.mousePressed = function() {

@@ -176,10 +176,12 @@ const joinLocalGroupChat = async (_id, phoneNumber) => {
     }
 
     if (!existingChat.signal.id) {
+        console.log('registering local group chat:', existingChat);
         return registerLocalGroupChat(existingChat, [phoneNumber]);
     } else {
         groupId = existingChat.signal.id;
 
+    console.log('Joining local group chat:', groupId);
      response = await axios.post(`${signal_api_url}groups/${clientnumberUrlEncoded}/${groupId}/members`, {
         members: [phoneNumber]
     }, {

@@ -177,7 +177,7 @@ router.post('/recommended', async (req, res) => {
         }
     }
     // log all names
-    console.log('recommendations:', recommendation);
+    console.log('recommendations:', unique);
 
    
     
